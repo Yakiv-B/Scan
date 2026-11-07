@@ -1,0 +1,21 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Сканер коробок</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>body{margin:0;font:17px system-ui,sans-serif;background:var(--tg-theme-bg-color,#fff);color:var(--tg-theme-text-color,#000);display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:14px;padding:16px;box-sizing:border-box;text-align:center}
+button{font-size:19px;padding:14px 22px;border:0;border-radius:12px;background:var(--tg-theme-button-color,#2481cc);color:var(--tg-theme-button-text-color,#fff);width:100%;max-width:340px}
+input{font-size:19px;padding:12px;border-radius:10px;border:1px solid #999;width:100%;max-width:340px;box-sizing:border-box;text-align:center}
+#msg{min-height:1.4em;opacity:.8}</style></head><body>
+<button id="scan">📷 Сканировать QR коробки</button>
+<div id="msg"></div>
+<input id="num" placeholder="или введите номер: K-00123" inputmode="text">
+<button id="send">Открыть коробку</button>
+<script>
+const W=window.Telegram&&Telegram.WebApp, M=document.getElementById('msg');
+function code(s){const m=String(s||'').match(/[kKкКκΚ]\s*-?\s*(\d{1,5})/);return m?'K-'+('00000'+m[1]).slice(-5):null}
+function done(c){M.textContent='✅ '+c;W.sendData(c);}            // отправляет номер в бот и закрывает окно
+function scan(){ if(!W||!W.showScanQrPopup){M.textContent='Сканер доступен только в Telegram на телефоне';return;}
+  W.showScanQrPopup({text:'Наведите камеру на QR-стикер коробки'},t=>{const c=code(t);if(c){done(c);return true;}M.textContent='⛔ Не номер коробки: '+t;return false;});}
+document.getElementById('scan').onclick=scan;
+document.getElementById('send').onclick=()=>{const c=code(document.getElementById('num').value);c?done(c):M.textContent='⛔ Пример: K-00123';};
+if(W){W.ready();W.expand();setTimeout(scan,300);}
+</script></body></html>
